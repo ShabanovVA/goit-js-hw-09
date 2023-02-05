@@ -16,9 +16,9 @@ timer.style.gridTemplateColumns = '50px 50px 70px 70px';
 timer.style.textAlign = 'center';
 timer.style.justifyContent = 'center';
 
-let timerId = 0;
+let timerId = null;
 
-btnStart.addEventListener('click', onStartTimer); 
+btnStart.addEventListener('click', onTimerStart); 
 
 btnStart.disabled = true;
 
@@ -48,18 +48,29 @@ function addLeadingZero(value) {
   return String(value).padStart(2, 0);
 }
 
-function onStartTimer() {
+function updateTimer() {
+    btnStart.disabled = true;
+
   const deltaTime = new Date(inputTimer.value) - Date.now();
   const { days, hours, minutes, seconds } = convertMs(deltaTime);
   outputDays.textContent = `${days}`;
   outputHours.textContent = `${hours}`;
   outputMinutes.textContent = `${minutes}`;
   outputSeconds.textContent = `${seconds}`;
-  (deltaTime > 1000) ? timerId = setInterval(onStartTimer, 1000) : clearInterval(timerId);
 
-  // timerId = setInterval(onStartTimer, 1000);
-  //   clearInterval(timerId)
-  btnStart.disabled = true;
+  if (deltaTime < 1000) {
+    clearInterval(timerId);
+    Notiflix.Notify.info(
+  'Account ended!',
+  {
+    timeout: 2000,
+  },
+);
+  };
+}
+
+function onTimerStart (){
+  timerId = setInterval(updateTimer, 1000);
 }
 
 function convertMs(ms) {
